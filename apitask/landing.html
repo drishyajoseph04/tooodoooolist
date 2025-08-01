@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF‑8">
+  <meta name="viewport" content="width=device‑width, initial‑scale=1">
+  <title>Your To‑Do List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+  </div>
+    <div class="container">
+      <span class="navbar-brand ms-2 fw-bolder" >To Do</span>
+    </div>
+     <div class="container">
+  
+    <div class="ms-auto  d-flex align-items-center">
+        <h3 class="mb-3 fw-bold text-light me-5 ">Welcome </h3>
+
+      <button  onclick="logout()" class="btn btn-outline-light btn-sm">Logout</button>
+    </div>
+  </nav>
+  <section class="py-5" style="background-color: #fff8e1;"> <!-- soft yellow -->
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold mb-3">Welcome </h1>
+    <p class="lead text-muted mb-0">Imagine what you can build next</p>
+  </div>
+</section>
+
+
+
+  <main class="container mt-5 my‑5">
+    <h2 class="mb-4">To‑Do List</h2>
+    <ul class="list-group" id="todoList"></ul>
+  </main>
+   </section>
+
+  <!-- Add Task Section -->
+  <section class="section-box">
+    <h3 class="text-center text-primary mb-4 mt-5">➕ Add New Task</h3>
+
+    <div class="mb-3">
+      <input type="text" id="taskInput" class="form-control form-control-lg" placeholder=" Enter your task here">
+    </div>
+    <div class="d-grid mb-4">
+      <button onclick="addCustomTask()" class="btn btn-secondary btn-lg">Add Task</button>
+    </div>
+
+    <ul id="customTaskList" class="list-group"></ul>
+  </section>
+
+  <!-- Fetched Tasks Section -->
+  <section class="section-box">
+    <h3 class="text-center text-warning mb-4">🌐 Daily Do</h3>
+    <ul id="jsonTaskList" class="list-group"></ul>
+  </section>
+
+
+  <!-- Footer -->
+<footer style="background-color: #fff8e1;" class=" text-muted mt-auto">
+  <div class="container py-5">
+    <div class="row g-4">
+      <!-- About / Logo -->
+      <div class="col-lg-3 col-md-6">
+        <h5 class="text-dark">ToDo</h5>
+        <!-- <p>Your tagline or short description goes here. Helping users manage tasks efficiently.</p> -->
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="text-dark">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-reset text-decoration-none">Dashboard</a></li>
+          <li><a href="#" class="text-reset text-decoration-none">Profile</a></li>
+          <li><a href="#" class="text-reset text-decoration-none">Settings</a></li>
+          <li><a href="#" class="text-reset text-decoration-none">Help / FAQ</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="text-dark">Legal</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-reset text-decoration-none">Privacy Policy</a></li>
+          <li><a href="#" class="text-reset text-decoration-none">Terms of Service</a></li>
+          <li><a href="#" class="text-reset text-decoration-none">Cookie Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact / Social -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="text-dark">Contact</h6>
+        <p>
+          <a href="mailto:info@example.com" class="text-reset text-decoration-none">todo@.com</a><br>
+          <a href="#" class="text-reset text-decoration-none">+1 (234) 567‑890</a>
+        </p>
+        <div class="mt-2">
+          <!-- Add your social icon links here -->
+          <a href="#" class="text-reset me-2"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="text-reset me-2"><i class="bi bi-twitter"></i></a>
+          <a href="#" class="text-reset"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-body-tertiary py-3">
+    <div class="container text-center">
+      <small>© 2025 Your Company. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+
+  <script src="main.js"></script>
+</body>
+<script>
+  function logout(){
+        localStorage.clear()
+        window.location="index.html"
+          
+    }
+
+</script>
+ <script>
+    function addCustomTask() {
+      const input = document.getElementById("taskInput");
+      const taskText = input.value.trim();
+      if (taskText === '') {
+        alert("Please enter a task.");
+        return;
+      }
+
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-center todo-item";
+
+      li.innerHTML = `
+        <span onclick="toggleComplete(this)" style="cursor:pointer;">${taskText}</span>
+        <button class="btn-delete btn-sm" onclick="deleteTask(this)">Delete</button>
+      `;
+
+      document.getElementById("customTaskList").appendChild(li);
+      input.value = '';
+    }
+
+    function toggleComplete(element) {
+      element.classList.toggle("text-decoration-line-through");
+      element.classList.toggle("text-muted");
+    }
+
+    function deleteTask(button) {
+      button.parentElement.remove();
+    }
+
+    function fetchJSONPlaceholderTodos() {
+      const xhr = new XMLHttpRequest();
+      
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          const todos = JSON.parse(xhr.responseText);
+          const list = document.getElementById("jsonTaskList");
+
+          todos.slice(0, 10).forEach(todo => {
+            const li = document.createElement("li");
+            li.className = "list-group-item d-flex align-items-center todo-fetch-item mb-2 rounded";
+            li.innerHTML = `
+              <i class="bi bi-check-circle-fill task-icon"></i>
+              <span>${todo.title}</span>
+            `;
+            list.appendChild(li);
+          });
+        } else {
+          alert("Failed to fetch tasks.");
+        }
+      };
+      xhr.send();
+    }
+
+    window.onload = fetchJSONPlaceholderTodos;
+  </script>
+
+</html>
